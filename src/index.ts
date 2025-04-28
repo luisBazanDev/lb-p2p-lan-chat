@@ -5,68 +5,18 @@ import os from "node:os";
 
 import { select } from "@inquirer/prompts";
 
-const UDP_PORT = 41234;
-const TCP_PORT = 1288;
+let CONFIG: {
+  UDP_PORT: number;
+  TCP_PORT: number;
+  IP_ADDRESS: string | null;
+} = {
+  UDP_PORT: 41234,
+  TCP_PORT: 1288,
+  IP_ADDRESS: null,
+};
+
 const udpServer = dgram.createSocket("udp4");
 
-// ✅ Devuelve la IP local (no '127.0.0.1')
-function getLocalIP() {
-  const interfaces = os.networkInterfaces();
-
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name] as os.NetworkInterfaceInfo[]) {
-      if (iface.family === "IPv4" && !iface.internal) {
-        return iface.address;
-      }
-    }
-  }
-  return "127.0.0.1";
-}
-
-function getInterfaces() {
-  const interfaces = os.networkInterfaces();
-
-  const result: os.NetworkInterfaceInfo[] = [];
-
-  for (const name of Object.keys(interfaces)) {
-    for (const iface of interfaces[name] as os.NetworkInterfaceInfo[]) {
-      result.push(iface);
-    }
-  }
-
-  return result;
-}
-
-// 🔊 Servidor UDP escucha y responde con su IP
-udpServer.on("message", (msg, rinfo) => {
-  console.log(`🔍 Discovery ping from ${rinfo.address}`);
-  const response = Buffer.from(`tcp://${getLocalIP()}:${TCP_PORT}`);
-  udpServer.send(response, rinfo.port, rinfo.address);
-});
-
-udpServer.bind(UDP_PORT, () => {
-  udpServer.setBroadcast(true);
-  console.log(`📡 UDP discovery server listening on port ${UDP_PORT}`);
-});
-
-(async () => {
-  const interfacea = await select({
-    message: "Select an interface",
-    choices: getInterfaces().map((iface, index) => {
-      return {
-        name: `${iface.family} ${iface.address} ${iface.mac} ${
-          iface.internal ? "(internal)" : ""
-        }`,
-        value: `${index}`,
-      };
-    }),
-    default: 0,
-  });
-
-  console.log(`Selected interface: ${interfacea}`);
-})();
-
-// 🌐 Servidor TCP principal
 const tcpServer = net.createServer((socket) => {
   console.log(`✅ Client connected: ${socket.remoteAddress}`);
   socket.on("data", (data) => {
@@ -76,6 +26,103 @@ const tcpServer = net.createServer((socket) => {
   socket.on("end", () => console.log("❌ Client disconnected"));
 });
 
-tcpServer.listen(TCP_PORT, () => {
-  console.log(`🚀 TCP server listening on port ${TCP_PORT}`);
+function getInterfaces() {
+  const interfaces = os.networkInterfaces();
+
+  const result: os.NetworkInterfaceInfo[] = [];
+
+  for (const name of Object.keys(interfaces)) {
+    for (const iface of interfaces[name] as os.NetworkInterfaceInfo[]) {
+      if (iface.family === "IPv4") {
+        result.push(iface);
+      }
+    }
+  }
+
+  return result;
+}
+
+(async () => {
+  const selectIndex = await select({
+    message: "Select an interface",
+    choices: getInterfaces().map((iface, index) => {
+      return {
+        name: `${iface.family} ${iface.address} ${
+          iface.internal ? "(internal)" : ""
+        }`,
+        value: index,
+      };
+    }),
+    default: 0,
+  });
+
+  CONFIG.IP_ADDRESS = getInterfaces()[selectIndex].address;
+
+  if (!CONFIG.IP_ADDRESS) {
+    console.error("No address found");
+    process.exit(1);
+  }
+
+  udpServer.bind(CONFIG.UDP_PORT, () => {
+    udpServer.setBroadcast(true);
+    console.log(`📡 UDP discovery server listening on port ${CONFIG.UDP_PORT}`);
+  });
+
+  tcpServer.listen(CONFIG.TCP_PORT, () => {
+    console.log(`🚀 TCP server listening on port ${CONFIG.TCP_PORT}`);
+  });
+})();
+
+udpServer.on("message", (msg, rinfo) => {
+  console.log(`🔍 Discovery ping from ${rinfo.address}`);
+  const response = Buffer.from(`tcp://${CONFIG.IP_ADDRESS}:${CONFIG.TCP_PORT}`);
+  udpServer.send(response, rinfo.port, rinfo.address);
 });
+
+udpServer.on("message", (msg, rinfo) => {
+  console.log(`${rinfo.address}: ${msg}`);
+
+  const ip = rinfo.address;
+
+  const client = net.createConnection(
+    { host: ip, port: CONFIG.TCP_PORT },
+    () => {
+      console.log("✅ Connected to " + ip);
+      client.write("Hello from client!");
+    }
+  );
+
+  client.on("data", (data) => {
+    console.log(`📨 Received: ${data}`);
+  });
+
+  client.on("end", () => {
+    console.log("❌ Disconnected from server");
+  });
+
+  client.on("error", (err) => {
+    console.error(`⚠️ TCP error: ${err.message}`);
+  });
+});
+
+// Discover new clients every 5 seconds
+setInterval(() => {
+  if (!CONFIG.IP_ADDRESS) return;
+
+  udpServer.bind(() => {
+    udpServer.setBroadcast(true);
+
+    // 📡 Enviar broadcast
+    const message = Buffer.from("discover");
+    udpServer.send(
+      message,
+      0,
+      message.length,
+      CONFIG.UDP_PORT,
+      "255.255.255.255",
+      () => {
+        console.log("🔍 Sent discovery message");
+      }
+    );
+  });
+}, 5000);
