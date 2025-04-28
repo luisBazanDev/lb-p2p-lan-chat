@@ -5,6 +5,8 @@ import os from "node:os";
 
 import { select } from "@inquirer/prompts";
 
+const pairs: string[] = [];
+
 let CONFIG: {
   UDP_PORT: number;
   TCP_PORT: number;
@@ -42,6 +44,20 @@ function getInterfaces() {
   return result;
 }
 
+function readChat() {
+  const stdin = process.stdin;
+  stdin.setEncoding("utf8");
+
+  stdin.on("data", (data: string) => {
+    const message = data.trim();
+    if (message) {
+      pairs.forEach((pair) => {
+        udpServer.send(Buffer.from(message), CONFIG.UDP_PORT, pair);
+      });
+    }
+  });
+}
+
 (async () => {
   const selectIndex = await select({
     message: "Select an interface",
@@ -71,15 +87,35 @@ function getInterfaces() {
   tcpServer.listen(CONFIG.TCP_PORT, () => {
     console.log(`🚀 TCP server listening on port ${CONFIG.TCP_PORT}`);
   });
+
+  setTimeout(() => {
+    console.log(
+      "💬 Type your message and hit enter to send it to all clients."
+    );
+    readChat();
+  }, 1000);
 })();
 
 udpServer.on("message", (msg, rinfo) => {
+  if (
+    getInterfaces()
+      .map((x) => x.address)
+      .includes(rinfo.address)
+  )
+    return;
   console.log(`🔍 Discovery ping from ${rinfo.address}`);
   const response = Buffer.from(`tcp://${CONFIG.IP_ADDRESS}:${CONFIG.TCP_PORT}`);
   udpServer.send(response, rinfo.port, rinfo.address);
 });
 
 udpServer.on("message", (msg, rinfo) => {
+  if (
+    getInterfaces()
+      .map((x) => x.address)
+      .includes(rinfo.address)
+  )
+    return;
+
   console.log(`${rinfo.address}: ${msg}`);
 
   const ip = rinfo.address;
@@ -109,20 +145,15 @@ udpServer.on("message", (msg, rinfo) => {
 setInterval(() => {
   if (!CONFIG.IP_ADDRESS) return;
 
-  udpServer.bind(() => {
-    udpServer.setBroadcast(true);
-
-    // 📡 Enviar broadcast
-    const message = Buffer.from("discover");
-    udpServer.send(
-      message,
-      0,
-      message.length,
-      CONFIG.UDP_PORT,
-      "255.255.255.255",
-      () => {
-        console.log("🔍 Sent discovery message");
-      }
-    );
-  });
+  const message = Buffer.from("discover");
+  udpServer.send(
+    message,
+    0,
+    message.length,
+    CONFIG.UDP_PORT,
+    "255.255.255.255",
+    () => {
+      // console.log("🔍 Sent discovery message");
+    }
+  );
 }, 5000);
