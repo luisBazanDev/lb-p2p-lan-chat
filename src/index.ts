@@ -2,6 +2,7 @@
 import dgram from "node:dgram";
 import net from "node:net";
 import os from "node:os";
+import readline from "readline";
 
 import { select, input } from "@inquirer/prompts";
 
@@ -24,7 +25,7 @@ const udpServer = dgram.createSocket("udp4");
 const tcpServer = net.createServer(async (socket) => {
   console.log(`✅ Client connected: ${socket.remoteAddress?.split(":").pop()}`);
   socket.on("data", (data) => {
-    console.log(`${socket.remoteAddress?.split(":").pop()}: ${data}`);
+    safeLog(`${socket.remoteAddress?.split(":").pop()}: ${data}`);
   });
   socket.on("end", () => console.log("❌ Client disconnected"));
   pairs.push(socket);
@@ -44,6 +45,16 @@ function getInterfaces() {
   }
 
   return result;
+}
+
+function clearPromptLine() {
+  readline.clearLine(process.stdout, 0); // Limpia la línea actual
+  readline.cursorTo(process.stdout, 0); // Mueve el cursor al inicio
+}
+
+function safeLog(message: string) {
+  clearPromptLine();
+  console.log(message);
 }
 
 async function readChat() {
@@ -116,7 +127,7 @@ udpServer.on("message", (msg, rinfo) => {
   // Filter if ready connected
   if (pairs.map((x) => x.remoteAddress?.split(":").pop()).includes(ip)) return;
 
-  console.log(`${ip} > ${msg}`);
+  safeLog(`${ip} > ${msg}`);
 
   const client = net.createConnection(
     { host: ip, port: CONFIG.TCP_PORT },
