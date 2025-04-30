@@ -24,10 +24,11 @@ const udpServer = dgram.createSocket("udp4");
 const tcpServer = net.createServer(async (socket) => {
   console.log(`✅ Client connected: ${socket.remoteAddress?.split(":").pop()}`);
   socket.on("data", (data) => {
-    console.log(`📨 Received: ${data}`);
+    console.log(`${socket.remoteAddress?.split(":").pop()}: ${data}`);
     socket.write(`Echo: ${data}`);
   });
   socket.on("end", () => console.log("❌ Client disconnected"));
+  pairs.push(socket);
 });
 
 function getInterfaces() {
@@ -58,7 +59,7 @@ async function readChat() {
   }
 
   pairs.forEach((pair) => {
-    pair.emit(message);
+    pair.write(message);
   });
 
   readChat();
@@ -125,8 +126,6 @@ udpServer.on("message", (msg, rinfo) => {
       client.write("Hello from client!");
     }
   );
-
-  pairs.push(client);
 
   client.on("data", (data) => {
     console.log(`📨 Received: ${data}`);
