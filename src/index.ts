@@ -3,7 +3,7 @@ import dgram from "node:dgram";
 import net from "node:net";
 import os from "node:os";
 
-import { select } from "@inquirer/prompts";
+import { select, input } from "@inquirer/prompts";
 
 const pairs: string[] = [];
 
@@ -11,10 +11,12 @@ let CONFIG: {
   UDP_PORT: number;
   TCP_PORT: number;
   IP_ADDRESS: string | null;
+  NETWORK: string | null;
 } = {
   UDP_PORT: 41234,
   TCP_PORT: 1288,
   IP_ADDRESS: null,
+  NETWORK: null,
 };
 
 const udpServer = dgram.createSocket("udp4");
@@ -44,18 +46,22 @@ function getInterfaces() {
   return result;
 }
 
-function readChat() {
-  const stdin = process.stdin;
-  stdin.setEncoding("utf8");
-
-  stdin.on("data", (data: string) => {
-    const message = data.trim();
-    if (message) {
-      pairs.forEach((pair) => {
-        udpServer.send(Buffer.from(message), CONFIG.UDP_PORT, pair);
-      });
-    }
+async function readChat() {
+  const message = await input({
+    message: "(you) > ",
+    required: true,
   });
+
+  if (message === "exit") {
+    console.log("👋 Goodbye!");
+    process.exit(0);
+  }
+
+  pairs.forEach((pair) => {
+    udpServer.send(Buffer.from(message), CONFIG.UDP_PORT, pair);
+  });
+
+  readChat();
 }
 
 (async () => {
@@ -116,9 +122,9 @@ udpServer.on("message", (msg, rinfo) => {
   )
     return;
 
-  console.log(`${rinfo.address}: ${msg}`);
-
   const ip = rinfo.address;
+
+  console.log(`${ip} > ${msg}`);
 
   const client = net.createConnection(
     { host: ip, port: CONFIG.TCP_PORT },
