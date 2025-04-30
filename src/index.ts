@@ -21,8 +21,8 @@ let CONFIG: {
 
 const udpServer = dgram.createSocket("udp4");
 
-const tcpServer = net.createServer((socket) => {
-  console.log(`✅ Client connected: ${socket.remoteAddress}`);
+const tcpServer = net.createServer(async (socket) => {
+  console.log(`✅ Client connected: ${socket.remoteAddress?.split(":").pop()}`);
   socket.on("data", (data) => {
     console.log(`📨 Received: ${data}`);
     socket.write(`Echo: ${data}`);
@@ -114,7 +114,7 @@ udpServer.on("message", (msg, rinfo) => {
     return;
 
   // Filter if ready connected
-  if (pairs.map((x) => x.address()).includes(ip)) return;
+  if (pairs.map((x) => x.remoteAddress?.split(":").pop()).includes(ip)) return;
 
   console.log(`${ip} > ${msg}`);
 
