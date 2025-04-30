@@ -102,7 +102,7 @@ async function readChat() {
   }, 1000);
 })();
 
-udpServer.on("message", (msg, rinfo) => {
+tcpServer.on("message", (msg, rinfo) => {
   if (
     getInterfaces()
       .map((x) => x.address)
