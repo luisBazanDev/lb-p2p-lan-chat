@@ -128,7 +128,7 @@ udpServer.on("message", (msg, rinfo) => {
   );
 
   client.on("data", (data) => {
-    console.log(`📨 Received: ${data}`);
+    console.log(`${ip}: ${data}`);
   });
 
   client.on("end", () => {
