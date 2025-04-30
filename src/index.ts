@@ -115,14 +115,18 @@ udpServer.on("message", (msg, rinfo) => {
 });
 
 udpServer.on("message", (msg, rinfo) => {
+  const ip = rinfo.address;
+
+  // Filter if internal
   if (
     getInterfaces()
       .map((x) => x.address)
-      .includes(rinfo.address)
+      .includes(ip)
   )
     return;
 
-  const ip = rinfo.address;
+  // Filter if ready connected
+  if (pairs.includes(ip)) return;
 
   console.log(`${ip} > ${msg}`);
 
