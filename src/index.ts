@@ -5,7 +5,7 @@ import os from "node:os";
 
 import { select, input } from "@inquirer/prompts";
 
-const pairs: string[] = [];
+const pairs: net.Socket[] = [];
 
 let CONFIG: {
   UDP_PORT: number;
@@ -58,7 +58,7 @@ async function readChat() {
   }
 
   pairs.forEach((pair) => {
-    udpServer.send(Buffer.from(message), CONFIG.UDP_PORT, pair);
+    pair.emit(message);
   });
 
   readChat();
@@ -102,18 +102,6 @@ async function readChat() {
   }, 1000);
 })();
 
-tcpServer.on("message", (msg, rinfo) => {
-  if (
-    getInterfaces()
-      .map((x) => x.address)
-      .includes(rinfo.address)
-  )
-    return;
-  console.log(`🔍 Discovery ping from ${rinfo.address}`);
-  const response = Buffer.from(`tcp://${CONFIG.IP_ADDRESS}:${CONFIG.TCP_PORT}`);
-  udpServer.send(response, rinfo.port, rinfo.address);
-});
-
 udpServer.on("message", (msg, rinfo) => {
   const ip = rinfo.address;
 
@@ -126,7 +114,7 @@ udpServer.on("message", (msg, rinfo) => {
     return;
 
   // Filter if ready connected
-  if (pairs.includes(ip)) return;
+  if (pairs.map((x) => x.address()).includes(ip)) return;
 
   console.log(`${ip} > ${msg}`);
 
@@ -138,16 +126,18 @@ udpServer.on("message", (msg, rinfo) => {
     }
   );
 
+  pairs.push(client);
+
   client.on("data", (data) => {
     console.log(`📨 Received: ${data}`);
   });
 
   client.on("end", () => {
-    console.log("❌ Disconnected from server");
+    pairs.splice(pairs.indexOf(client), 1);
   });
 
   client.on("error", (err) => {
-    console.error(`⚠️ TCP error: ${err.message}`);
+    pairs.splice(pairs.indexOf(client), 1);
   });
 });
 
