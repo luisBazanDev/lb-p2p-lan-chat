@@ -25,7 +25,6 @@ const tcpServer = net.createServer(async (socket) => {
   console.log(`✅ Client connected: ${socket.remoteAddress?.split(":").pop()}`);
   socket.on("data", (data) => {
     console.log(`${socket.remoteAddress?.split(":").pop()}: ${data}`);
-    socket.write(`Echo: ${data}`);
   });
   socket.on("end", () => console.log("❌ Client disconnected"));
   pairs.push(socket);
