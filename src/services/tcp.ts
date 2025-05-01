@@ -1,5 +1,16 @@
 import net from "net";
-import { TCP_PORT, addPair, getPair, getPairs, removePair } from "../config.js";
+import {
+  INITIAL_TTL,
+  TCP_PORT,
+  USERNAME,
+  addPair,
+  getPair,
+  getPairs,
+  removePair,
+} from "../config.js";
+import { TCPMessageMessagePayload, TCPMessageType } from "../types/tcp.js";
+import { randomUUID } from "crypto";
+import { onTcpHello, onTcpMessage } from "../events/tcp.js";
 
 export default class TCPServer {
   private declare socket: net.Server | null;
@@ -32,8 +43,19 @@ export default class TCPServer {
     const pairs = getPairs();
     if (pairs.length === 0) return;
 
+    // Build the message package
+    const messagePackage: TCPMessageMessagePayload = {
+      message: message,
+      username: USERNAME()!,
+      uuid: randomUUID(),
+      ttl: INITIAL_TTL,
+    };
+
+    // TODO: Register message on the local chat
+
+    // Send the message to all connected pairs
     pairs.forEach((pair) => {
-      pair.write(message);
+      pair.write(JSON.stringify(messagePackage));
     });
   }
 
@@ -54,12 +76,33 @@ export default class TCPServer {
       return;
     }
 
+    // TODO: remove this console log
     console.log("✅ Connected to " + socket.remoteAddress?.split(":").pop());
-    // TODO: remove this message
-    socket.write("Hello world!");
+
+    // Send hello message
+    socket.write(
+      JSON.stringify({
+        type: TCPMessageType.HELLO,
+        payload: {
+          username: USERNAME(),
+        },
+      })
+    );
 
     socket.on("data", (data) => {
-      console.log(`${socket.remoteAddress?.split(":").pop()}: ${data}`);
+      try {
+        const message = JSON.parse(data.toString());
+        const type = message.type as TCPMessageType;
+
+        switch (type) {
+          case TCPMessageType.HELLO:
+            onTcpHello(socket, message.payload);
+            break;
+          case TCPMessageType.MESSAGE:
+            onTcpMessage(socket, message.payload);
+            break;
+        }
+      } catch (err) {}
     });
 
     socket.on("end", () => {

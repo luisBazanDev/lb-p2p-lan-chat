@@ -1,11 +1,13 @@
 export enum TCPMessageType {
-  HELLO,
-  PING,
-  MESSAGE,
-  PING_RESPONSE,
+  HELLO = "HELLO",
+  PING = "PING",
+  MESSAGE = "MESSAGE",
+  PING_RESPONSE = "PING_RESPONSE",
 }
 
-export type TCPMessageHelloPayload = {};
+export type TCPMessageHelloPayload = {
+  username: string;
+};
 
 export type TCPMessagePingPayload = {};
 
@@ -15,7 +17,7 @@ export type TCPMessageMessagePayload = {
   username: string;
   message: string;
   ttl: number;
-  hash: string;
+  uuid: string;
 };
 
 export type TCPMessage =
