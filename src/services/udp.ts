@@ -6,6 +6,7 @@ import { UDPMessageType } from "../types/udp.js";
 export default class UDPServer {
   private declare socket: dgram.Socket | null;
   declare static instance: UDPServer;
+  private declare interval: NodeJS.Timeout | null;
 
   constructor() {
     if (UDPServer.instance) {
@@ -39,12 +40,12 @@ export default class UDPServer {
     }
   }
 
-  private static registerListeners(udpServer: UDPServer) {
-    udpServer.socket?.on("error", (err) => {
+  private static registerListeners(udpServer: dgram.Socket) {
+    udpServer.on("error", (err) => {
       console.error("❌ UDP error: ", err);
     });
 
-    udpServer.socket?.on("message", this.onMessage);
+    udpServer.on("message", this.onMessage);
   }
 
   /**
@@ -52,13 +53,21 @@ export default class UDPServer {
    */
   static async start() {
     const udpServer = new UDPServer();
+    console.log("Starting UDP server...");
     udpServer.socket = dgram.createSocket("udp4");
+
     udpServer.socket.bind(UDP_PORT, () => {
       udpServer.socket?.setBroadcast(true);
       console.log("⚙ UDP server started");
     });
 
-    this.registerListeners(udpServer);
+    // Set the socket to broadcast
+    udpServer.interval = setInterval(() => {
+      if (!udpServer.socket) return;
+      udpServer.socket.send(UDPMessageType.DISCOVER, UDP_PORT);
+    }, 5000);
+
+    this.registerListeners(udpServer.socket);
   }
 
   /**
@@ -80,7 +89,12 @@ export default class UDPServer {
   }
 
   static async stop() {
-    new UDPServer().socket?.close();
-    new UDPServer().socket = null;
+    const instance = new UDPServer();
+    instance.socket?.close();
+    instance.socket = null;
+    if (instance.interval) {
+      clearInterval(instance.interval);
+      instance.interval = null;
+    }
   }
 }
