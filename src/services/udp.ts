@@ -36,9 +36,7 @@ export default class UDPServer {
       if (getPair(ip)) return;
 
       // Connect to the client
-      // TODO: Connect tcp socket
       TCPServer.connect(ip);
-      console.log("Connecting to client: ", ip);
     }
   }
 

@@ -16,15 +16,7 @@ export default class TCPServer {
   }
 
   private static onConnection(socket: net.Socket) {
-    console.log(
-      `✅ Client connected: ${socket.remoteAddress?.split(":").pop()}`
-    );
-    socket.on("data", (data) => {
-      // TODO: Process body data as json
-      console.log(`${socket.remoteAddress?.split(":").pop()}: ${data}`);
-    });
-    socket.on("end", () => console.log("❌ Client disconnected"));
-    addPair(socket);
+    this.registerSocket(socket);
   }
 
   static start() {
@@ -50,19 +42,24 @@ export default class TCPServer {
   }
 
   static connect(ip: string) {
-    const client = net.createConnection({ host: ip, port: TCP_PORT }, () => {
-      console.log(`✅ Connected to ${ip}`);
-      client.write("Hello from client!");
+    const client = net.createConnection({ host: ip, port: TCP_PORT });
+
+    this.registerSocket(client);
+  }
+
+  private static registerSocket(socket: net.Socket) {
+    socket.on("connect", () => {
+      console.log("✅ Connected to " + socket.remoteAddress);
+      socket.write("Hello world!");
     });
 
-    client.on("data", (data) => {
-      console.log(`${ip}: ${data}`);
+    socket.on("data", (data) => {
+      console.log(`${socket.remoteAddress}: ${data}`);
+    });
+    socket.on("end", () => {
+      console.log("❌ Client disconnected");
     });
 
-    client.on("end", () => {
-      console.log(`❌ Disconnected from ${ip}`);
-    });
-
-    addPair(client);
+    addPair(socket);
   }
 }
