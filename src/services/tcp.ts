@@ -111,17 +111,23 @@ export default class TCPServer {
     });
 
     socket.on("end", () => {
-      console.log("❌ Client disconnected");
-      removePair(socket.remoteAddress!);
+      if (getPair(socket.remoteAddress!)) {
+        console.log("❌ Client disconnected");
+        removePair(socket.remoteAddress!);
+      }
     });
 
     socket.on("error", () => {
-      console.log("❌ Client disconnected");
-      removePair(socket.remoteAddress!);
+      if (getPair(socket.remoteAddress!)) {
+        console.log("❌ Client disconnected");
+        removePair(socket.remoteAddress!);
+      }
     });
     socket.on("timeout", () => {
-      console.log("❌ Client disconnected");
-      removePair(socket.remoteAddress!);
+      if (getPair(socket.remoteAddress!)) {
+        console.log("❌ Client disconnected");
+        removePair(socket.remoteAddress!);
+      }
     });
 
     addPair(socket);
