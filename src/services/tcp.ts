@@ -81,9 +81,6 @@ export default class TCPServer {
       return;
     }
 
-    // TODO: remove this console log
-    console.log("✅ Connected to " + socket.remoteAddress?.split(":").pop());
-
     // Send hello message
     socket.write(
       JSON.stringify({
