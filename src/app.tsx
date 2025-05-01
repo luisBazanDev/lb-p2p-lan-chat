@@ -5,7 +5,7 @@ export default function App() {
   return (
     <>
       <Box margin={2}>
-        <Text>This is a box with margin</Text>
+        <Text>This is a box with margin !</Text>
       </Box>
     </>
   );

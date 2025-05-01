@@ -3,22 +3,22 @@ import React from "react";
 import { render } from "ink";
 import meow from "meow";
 import App from "./app.js";
+import { configure } from "./config.js";
 
-const cli = meow(
+meow(
   `
 	Usage
 	  $ lb-p2p-lan-chat
 `,
   {
     importMeta: import.meta,
-    flags: {
-      name: {
-        type: "string",
-      },
-    },
   }
 );
 
-console.log(cli.flags.name);
+async function main() {
+  await configure();
 
-render(<App />);
+  render(<App />);
+}
+
+main();
