@@ -55,7 +55,12 @@ export default class TCPServer {
 
     // Send the message to all connected pairs
     pairs.forEach((pair) => {
-      pair.write(JSON.stringify(messagePackage));
+      pair.write(
+        JSON.stringify({
+          type: TCPMessageType.MESSAGE,
+          payload: messagePackage,
+        })
+      );
     });
   }
 

@@ -24,4 +24,6 @@ export async function onTcpMessage(
       payload.uuid
     } ${socket.remoteAddress!})`
   );
+
+  // TODO: Reply message to pairs
 }
