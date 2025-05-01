@@ -42,7 +42,9 @@ export default class TCPServer {
       const client = net.createConnection({ host: ip, port: TCP_PORT() }, () =>
         this.registerSocket(client)
       );
-    } catch (err) {}
+    } catch (err) {
+      return;
+    }
   }
 
   private static registerSocket(socket: net.Socket) {
