@@ -89,7 +89,9 @@ async function readChat() {
     default: 0,
   });
 
-  CONFIG.IP_ADDRESS = getInterfaces()[selectIndex].address;
+  CONFIG.IP_ADDRESS = (
+    getInterfaces()[selectIndex] as os.NetworkInterfaceInfo
+  ).address;
 
   if (!CONFIG.IP_ADDRESS) {
     console.error("No address found");
@@ -147,7 +149,7 @@ udpServer.on("message", (msg, rinfo) => {
     pairs.splice(pairs.indexOf(client), 1);
   });
 
-  client.on("error", (err) => {
+  client.on("error", () => {
     pairs.splice(pairs.indexOf(client), 1);
   });
 });
