@@ -21,6 +21,7 @@ export default class UDPServer {
   private static onMessage(msg: Buffer, rinfo: dgram.RemoteInfo) {
     const message = msg.toString();
     const ip = rinfo.address;
+    console.log("UDP message received: ", msg.toString(), ip);
 
     // Filter if internal
     if (message === UDPMessageType.DISCOVER) {
