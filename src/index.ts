@@ -98,10 +98,10 @@ async function readChat() {
     process.exit(1);
   }
 
-  udpServer.bind(CONFIG.UDP_PORT, () => {
-    udpServer.setBroadcast(true);
-    console.log(`📡 UDP discovery server listening on port ${CONFIG.UDP_PORT}`);
-  });
+  // udpServer.bind(CONFIG.UDP_PORT, () => {
+  //   udpServer.setBroadcast(true);
+  //   console.log(`📡 UDP discovery server listening on port ${CONFIG.UDP_PORT}`);
+  // });
 
   tcpServer.listen(CONFIG.TCP_PORT, () => {
     console.log(`🚀 TCP server listening on port ${CONFIG.TCP_PORT}`);
@@ -119,15 +119,15 @@ udpServer.on("message", (msg, rinfo) => {
   const ip = rinfo.address;
 
   // Filter if internal
-  if (
-    getInterfaces()
-      .map((x) => x.address)
-      .includes(ip)
-  )
-    return;
+  // if (
+  //   getInterfaces()
+  //     .map((x) => x.address)
+  //     .includes(ip)
+  // )
+  //   return;
 
   // Filter if ready connected
-  if (pairs.map((x) => x.remoteAddress?.split(":").pop()).includes(ip)) return;
+  // if (pairs.map((x) => x.remoteAddress?.split(":").pop()).includes(ip)) return;
 
   safeLog(`${ip} > ${msg}`);
 

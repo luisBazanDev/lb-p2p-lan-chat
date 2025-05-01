@@ -1,4 +1,4 @@
-import os from "os";
+import net from "net";
 import { select, number, input } from "@inquirer/prompts";
 import Interfaces from "./services/Interfaces.js";
 
@@ -8,13 +8,13 @@ const config: {
   IP_ADDRESS: string | null;
   NETWORK: string | null;
   USERNAME: string | null;
-  INTERFACES: os.NetworkInterfaceInfo[];
+  PAIRS: net.Socket[];
 } = {
   UDP_PORT: 41234,
   TCP_PORT: 1288,
   IP_ADDRESS: null,
   NETWORK: null,
-  INTERFACES: [],
+  PAIRS: [],
   USERNAME: null,
 };
 
@@ -71,9 +71,13 @@ export const TCP_PORT = config.TCP_PORT;
 export const IP_ADDRESS = config.IP_ADDRESS;
 export const NETWORK = config.NETWORK;
 export const USERNAME = config.USERNAME;
-export const setInterfaces = (interfaces: os.NetworkInterfaceInfo[]) => {
-  config.INTERFACES = interfaces;
+export const addPair = (socket: net.Socket[]) => {
+  config.PAIRS.push(...socket);
 };
-export const getInterfaces = () => {
-  return config.INTERFACES;
+export const getPair = (ip: string) => {
+  return config.PAIRS.find((pair) => pair.remoteAddress === ip);
 };
+export const removePair = (ip: string) => {
+  config.PAIRS = config.PAIRS.filter((pair) => pair.remoteAddress !== ip);
+};
+export const getPairs = () => config.PAIRS;
