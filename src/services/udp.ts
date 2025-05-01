@@ -21,7 +21,6 @@ export default class UDPServer {
   private static onMessage(msg: Buffer, rinfo: dgram.RemoteInfo) {
     const message = msg.toString();
     const ip = rinfo.address;
-    console.log("UDP message received: ", msg.toString(), ip);
 
     // Filter if internal
     if (message === UDPMessageType.DISCOVER) {
@@ -65,7 +64,13 @@ export default class UDPServer {
     // Set the socket to broadcast
     udpServer.interval = setInterval(() => {
       if (!udpServer.socket) return;
-      udpServer.socket.send(UDPMessageType.DISCOVER, UDP_PORT);
+      udpServer.socket.send(
+        Buffer.from(UDPMessageType.DISCOVER),
+        0,
+        UDPMessageType.DISCOVER.length,
+        UDP_PORT,
+        "255.255.255.255"
+      );
     }, 5000);
 
     this.registerListeners(udpServer.socket);
