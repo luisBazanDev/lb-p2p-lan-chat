@@ -17,6 +17,11 @@ meow(
   }
 );
 
+// Handle uncaught exceptions
+process.on("uncaughtException", function () {
+  // Catch all uncaught exceptions
+});
+
 async function main() {
   await configure();
   await UDPServer.start();

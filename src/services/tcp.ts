@@ -64,6 +64,10 @@ export default class TCPServer {
       console.log("❌ Client error");
       removePair(socket.remoteAddress!);
     });
+    socket.on("timeout", () => {
+      console.log("❌ Client timeout");
+      removePair(socket.remoteAddress!);
+    });
 
     addPair(socket);
   }
