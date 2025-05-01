@@ -1,11 +1,13 @@
 import React from "react";
-import { Text, Box } from "ink";
+import { Box } from "ink";
+import InputText from "./components/organisms/InputText.js";
 
 export default function App() {
   return (
     <>
-      <Box margin={2}>
-        <Text>This is a box with margin !</Text>
+      <Box></Box>
+      <Box margin={1}>
+        <InputText />
       </Box>
     </>
   );

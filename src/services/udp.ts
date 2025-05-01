@@ -57,7 +57,7 @@ export default class UDPServer {
 
     udpServer.socket.bind(UDP_PORT(), () => {
       udpServer.socket?.setBroadcast(true);
-      console.log("⚙ UDP server started");
+      console.log("✅ UDP server started");
     });
 
     // Set the socket to broadcast

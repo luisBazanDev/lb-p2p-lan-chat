@@ -20,7 +20,7 @@ export default class TCPServer {
     tcpServer.socket = net.createServer(this.registerSocket);
 
     tcpServer.socket.listen(TCP_PORT(), () => {
-      console.log("⚙ TCP server started", TCP_PORT());
+      console.log("✅ TCP server started", TCP_PORT());
     });
 
     tcpServer.socket.on("error", (err) => {
@@ -49,6 +49,7 @@ export default class TCPServer {
 
   private static registerSocket(socket: net.Socket) {
     console.log("✅ Connected to " + socket.remoteAddress?.split(":").pop());
+    // TODO: remove this message
     socket.write("Hello world!");
 
     socket.on("data", (data) => {
@@ -61,11 +62,11 @@ export default class TCPServer {
     });
 
     socket.on("error", () => {
-      console.log("❌ Client error");
+      console.log("❌ Client disconnected");
       removePair(socket.remoteAddress!);
     });
     socket.on("timeout", () => {
-      console.log("❌ Client timeout");
+      console.log("❌ Client disconnected");
       removePair(socket.remoteAddress!);
     });
 

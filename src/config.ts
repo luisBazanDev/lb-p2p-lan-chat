@@ -68,9 +68,9 @@ export async function configure() {
 
 export const UDP_PORT = () => config.UDP_PORT;
 export const TCP_PORT = () => config.TCP_PORT;
-export const IP_ADDRESS = config.IP_ADDRESS;
+export const IP_ADDRESS = () => config.IP_ADDRESS;
 export const NETWORK = config.NETWORK;
-export const USERNAME = config.USERNAME;
+export const USERNAME = () => config.USERNAME;
 export const addPair = (socket: net.Socket) => {
   config.PAIRS.push(socket);
 };
