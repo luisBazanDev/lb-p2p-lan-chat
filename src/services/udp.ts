@@ -2,6 +2,7 @@ import dgram from "node:dgram";
 import { getPair, UDP_PORT } from "../config.js";
 import Interfaces from "./Interfaces.js";
 import { UDPMessageType } from "../types/udp.js";
+import TCPServer from "./tcp.js";
 
 export default class UDPServer {
   private declare socket: dgram.Socket | null;
@@ -36,6 +37,7 @@ export default class UDPServer {
 
       // Connect to the client
       // TODO: Connect tcp socket
+      TCPServer.connect(ip);
       console.log("Connecting to client: ", ip);
     }
   }
@@ -53,7 +55,6 @@ export default class UDPServer {
    */
   static async start() {
     const udpServer = new UDPServer();
-    console.log("Starting UDP server...");
     udpServer.socket = dgram.createSocket("udp4");
 
     udpServer.socket.bind(UDP_PORT, () => {

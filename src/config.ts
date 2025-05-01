@@ -71,8 +71,8 @@ export const TCP_PORT = config.TCP_PORT;
 export const IP_ADDRESS = config.IP_ADDRESS;
 export const NETWORK = config.NETWORK;
 export const USERNAME = config.USERNAME;
-export const addPair = (socket: net.Socket[]) => {
-  config.PAIRS.push(...socket);
+export const addPair = (socket: net.Socket) => {
+  config.PAIRS.push(socket);
 };
 export const getPair = (ip: string) => {
   return config.PAIRS.find((pair) => pair.remoteAddress === ip);
