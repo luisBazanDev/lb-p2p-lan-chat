@@ -66,8 +66,8 @@ export async function configure() {
   config.USERNAME = USERNAME;
 }
 
-export const UDP_PORT = config.UDP_PORT;
-export const TCP_PORT = config.TCP_PORT;
+export const UDP_PORT = () => config.UDP_PORT;
+export const TCP_PORT = () => config.TCP_PORT;
 export const IP_ADDRESS = config.IP_ADDRESS;
 export const NETWORK = config.NETWORK;
 export const USERNAME = config.USERNAME;

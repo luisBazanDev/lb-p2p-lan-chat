@@ -55,7 +55,7 @@ export default class UDPServer {
     const udpServer = new UDPServer();
     udpServer.socket = dgram.createSocket("udp4");
 
-    udpServer.socket.bind(UDP_PORT, () => {
+    udpServer.socket.bind(UDP_PORT(), () => {
       udpServer.socket?.setBroadcast(true);
       console.log("⚙ UDP server started");
     });
@@ -67,7 +67,7 @@ export default class UDPServer {
         Buffer.from(UDPMessageType.DISCOVER),
         0,
         UDPMessageType.DISCOVER.length,
-        UDP_PORT,
+        UDP_PORT(),
         "255.255.255.255"
       );
     }, 5000);

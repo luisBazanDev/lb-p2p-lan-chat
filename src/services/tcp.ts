@@ -19,8 +19,8 @@ export default class TCPServer {
     const tcpServer = new TCPServer();
     tcpServer.socket = net.createServer(this.registerSocket);
 
-    tcpServer.socket.listen(TCP_PORT, () => {
-      console.log("⚙ TCP server started");
+    tcpServer.socket.listen(TCP_PORT(), () => {
+      console.log("⚙ TCP server started", TCP_PORT());
     });
 
     tcpServer.socket.on("error", (err) => {
@@ -38,7 +38,7 @@ export default class TCPServer {
   }
 
   static connect(ip: string) {
-    const client = net.createConnection({ host: ip, port: TCP_PORT }, () =>
+    const client = net.createConnection({ host: ip, port: TCP_PORT() }, () =>
       this.registerSocket(client)
     );
   }
@@ -53,6 +53,11 @@ export default class TCPServer {
 
     socket.on("end", () => {
       console.log("❌ Client disconnected");
+      removePair(socket.remoteAddress!);
+    });
+
+    socket.on("error", () => {
+      console.log("❌ Client error");
       removePair(socket.remoteAddress!);
     });
 
