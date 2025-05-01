@@ -1,5 +1,5 @@
 import net from "net";
-import { TCP_PORT, addPair, getPairs } from "../config.js";
+import { TCP_PORT, addPair, getPairs, removePair } from "../config.js";
 
 export default class TCPServer {
   private declare socket: net.Server | null;
@@ -15,13 +15,9 @@ export default class TCPServer {
     this.socket = null;
   }
 
-  private static onConnection(socket: net.Socket) {
-    this.registerSocket(socket);
-  }
-
   static start() {
     const tcpServer = new TCPServer();
-    tcpServer.socket = net.createServer(this.onConnection);
+    tcpServer.socket = net.createServer(this.registerSocket);
 
     tcpServer.socket.listen(TCP_PORT, () => {
       console.log("⚙ TCP server started");
@@ -42,22 +38,22 @@ export default class TCPServer {
   }
 
   static connect(ip: string) {
-    const client = net.createConnection({ host: ip, port: TCP_PORT });
-
-    this.registerSocket(client);
+    const client = net.createConnection({ host: ip, port: TCP_PORT }, () =>
+      this.registerSocket(client)
+    );
   }
 
   private static registerSocket(socket: net.Socket) {
-    socket.on("connect", () => {
-      console.log("✅ Connected to " + socket.remoteAddress);
-      socket.write("Hello world!");
-    });
+    console.log("✅ Connected to " + socket.remoteAddress?.split(":").pop());
+    socket.write("Hello world!");
 
     socket.on("data", (data) => {
-      console.log(`${socket.remoteAddress}: ${data}`);
+      console.log(`${socket.remoteAddress?.split(":").pop()}: ${data}`);
     });
+
     socket.on("end", () => {
       console.log("❌ Client disconnected");
+      removePair(socket.remoteAddress!);
     });
 
     addPair(socket);
