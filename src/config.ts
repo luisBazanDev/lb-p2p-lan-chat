@@ -6,14 +6,12 @@ const config: {
   UDP_PORT: number;
   TCP_PORT: number;
   IP_ADDRESS: string | null;
-  NETWORK: string | null;
   USERNAME: string | null;
   PAIRS: net.Socket[];
 } = {
   UDP_PORT: 41234,
   TCP_PORT: 1288,
   IP_ADDRESS: null,
-  NETWORK: null,
   PAIRS: [],
   USERNAME: null,
 };
@@ -69,8 +67,8 @@ export async function configure() {
 export const UDP_PORT = () => config.UDP_PORT;
 export const TCP_PORT = () => config.TCP_PORT;
 export const IP_ADDRESS = () => config.IP_ADDRESS;
-export const NETWORK = config.NETWORK;
 export const USERNAME = () => config.USERNAME;
+export const INITIAL_TTL = 5;
 export const addPair = (socket: net.Socket) => {
   config.PAIRS.push(socket);
 };

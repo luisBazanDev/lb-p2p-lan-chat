@@ -1,5 +1,5 @@
 import net from "net";
-import { TCP_PORT, addPair, getPairs, removePair } from "../config.js";
+import { TCP_PORT, addPair, getPair, getPairs, removePair } from "../config.js";
 
 export default class TCPServer {
   private declare socket: net.Server | null;
@@ -48,6 +48,12 @@ export default class TCPServer {
   }
 
   private static registerSocket(socket: net.Socket) {
+    // Prevent double connections between pairs
+    if (getPair(socket.remoteAddress!)) {
+      socket.destroy();
+      return;
+    }
+
     console.log("✅ Connected to " + socket.remoteAddress?.split(":").pop());
     // TODO: remove this message
     socket.write("Hello world!");
