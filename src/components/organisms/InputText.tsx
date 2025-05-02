@@ -48,8 +48,8 @@ export default function InputText() {
     <Box width="100%">
       <Box width={80}>
         <Text color={"gray"}>{`(${IP_ADDRESS()})`}</Text>
-        <Text color={"green"}>{` ${USERNAME()}`}</Text>
-        <Text color={"red"}>{" > "}</Text>
+        <Text color={"greenBright"}>{` ${USERNAME()}`}</Text>
+        <Text color={"redBright"}>{" > "}</Text>
         <Box width={50}>
           <Text wrap="truncate-start">
             {isCursorVisible && inputa === "" ? (

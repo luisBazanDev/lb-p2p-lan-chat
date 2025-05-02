@@ -39,10 +39,10 @@ function Chat({ chat }: { chat: TCPMessageMessagePayload }) {
       <Text
         color={
           chat.ttl === INITIAL_TTL
-            ? "green"
+            ? "greenBright"
             : chat.ttl === INITIAL_TTL - 1
-            ? "blue"
-            : "red"
+            ? "blueBright"
+            : "redBright"
         }
       >
         {chat.username}
