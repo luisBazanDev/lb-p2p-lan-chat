@@ -7,6 +7,7 @@ import {
 } from "../types/tcp.js";
 import { addChat } from "../contexts/ChatContext.js";
 import { getPairs } from "../config.js";
+import PaisContext from "../contexts/PairsContext.js";
 
 const sessionChats: string[] = [];
 const MAX_SESSION_CHAT = 1000;
@@ -17,6 +18,13 @@ export async function onTcpHello(
 ) {
   const ip = socket.remoteAddress!;
   const username = payload.username;
+
+  // Register pair
+  PaisContext.addPair({
+    ip: ip,
+    username: username,
+    timestamp: Date.now(),
+  });
 
   // TODO: Register message as system message
   console.log(`👋 ${username} join to the chat from ${ip}`);

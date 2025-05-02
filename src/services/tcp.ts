@@ -12,6 +12,7 @@ import { TCPMessage, TCPMessageType } from "../types/tcp.js";
 import { randomUUID } from "crypto";
 import { onTcpHello, onTcpMessage } from "../events/tcp.js";
 import { addChat } from "../contexts/ChatContext.js";
+import PairsContext from "../contexts/PairsContext.js";
 
 export default class TCPServer {
   private declare socket: net.Server | null;
@@ -77,6 +78,24 @@ export default class TCPServer {
     }
   }
 
+  private static disconnect(ip: string) {
+    const pair = getPair(ip);
+    if (!pair) return;
+
+    pair.destroy();
+    removePair(ip);
+
+    if (PairsContext.getPairs().findIndex((x) => x.ip === ip) === -1) return;
+    PairsContext.removePair(ip);
+
+    // TODO: Register message as system message
+    console.log(
+      `👋 ${
+        PairsContext.getPairs().find((x) => x.ip === ip)?.username
+      } left the chat from ${ip}`
+    );
+  }
+
   private static registerSocket(socket: net.Socket) {
     // Prevent double connections between pairs
     if (getPair(socket.remoteAddress!)) {
@@ -112,21 +131,18 @@ export default class TCPServer {
 
     socket.on("end", () => {
       if (getPair(socket.remoteAddress!)) {
-        console.log("❌ Client disconnected");
-        removePair(socket.remoteAddress!);
+        this.disconnect(socket.remoteAddress!);
       }
     });
 
     socket.on("error", () => {
       if (getPair(socket.remoteAddress!)) {
-        console.log("❌ Client disconnected");
-        removePair(socket.remoteAddress!);
+        this.disconnect(socket.remoteAddress!);
       }
     });
     socket.on("timeout", () => {
       if (getPair(socket.remoteAddress!)) {
-        console.log("❌ Client disconnected");
-        removePair(socket.remoteAddress!);
+        this.disconnect(socket.remoteAddress!);
       }
     });
 
