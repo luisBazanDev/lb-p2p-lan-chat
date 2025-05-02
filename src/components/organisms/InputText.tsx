@@ -3,6 +3,8 @@ import { useInput, Text, Box } from "ink";
 import { IP_ADDRESS, USERNAME } from "../../config.js";
 import TCPServer from "../../services/tcp.js";
 import Pairs from "../atoms/Pairs.js";
+import UdpStatus from "../atoms/UdpStatus.js";
+import TcpStatus from "../atoms/TcpStatus.js";
 
 export default function InputText() {
   const [inputa, setInput] = useState("");
@@ -67,6 +69,10 @@ export default function InputText() {
       <Box>
         <Text> | </Text>
         <Pairs />
+        <Text> | </Text>
+        <UdpStatus />
+        <Text> | </Text>
+        <TcpStatus />
       </Box>
     </Box>
   );
