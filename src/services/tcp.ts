@@ -60,7 +60,12 @@ export default class TCPServer {
 
     // Send the message to all connected pairs
     pairs.forEach((pair) => {
-      pair.write(JSON.stringify(messagePackage));
+      pair.write(
+        JSON.stringify({
+          ...messagePackage,
+          ...{ payload: { ttl: INITIAL_TTL - 1 } },
+        })
+      );
     });
   }
 

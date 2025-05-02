@@ -33,7 +33,7 @@ function Chat({ chat }: { chat: TCPMessageMessagePayload }) {
       <Text
         color={
           chat.ttl === INITIAL_TTL
-            ? "gree"
+            ? "green"
             : chat.ttl === INITIAL_TTL - 1
             ? "blue"
             : "red"
