@@ -18,8 +18,9 @@ meow(
 );
 
 // Handle uncaught exceptions
-process.on("uncaughtException", function () {
+process.on("uncaughtException", function (err) {
   // Catch all uncaught exceptions
+  console.error("❌ Uncaught Exception: ", err);
 });
 
 async function main() {

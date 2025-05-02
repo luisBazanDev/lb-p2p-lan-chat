@@ -8,9 +8,10 @@ import {
   getPairs,
   removePair,
 } from "../config.js";
-import { TCPMessageMessagePayload, TCPMessageType } from "../types/tcp.js";
+import { TCPMessage, TCPMessageType } from "../types/tcp.js";
 import { randomUUID } from "crypto";
 import { onTcpHello, onTcpMessage } from "../events/tcp.js";
+import { addChat } from "../contexts/ChatContext.js";
 
 export default class TCPServer {
   private declare socket: net.Server | null;
@@ -44,23 +45,22 @@ export default class TCPServer {
     if (pairs.length === 0) return;
 
     // Build the message package
-    const messagePackage: TCPMessageMessagePayload = {
-      message: message,
-      username: USERNAME()!,
-      uuid: randomUUID(),
-      ttl: INITIAL_TTL,
+    const messagePackage: TCPMessage = {
+      type: TCPMessageType.MESSAGE,
+      payload: {
+        message: message,
+        username: USERNAME()!,
+        uuid: randomUUID(),
+        ttl: INITIAL_TTL,
+      },
     };
 
     // TODO: Register message on the local chat
+    addChat(messagePackage.payload);
 
     // Send the message to all connected pairs
     pairs.forEach((pair) => {
-      pair.write(
-        JSON.stringify({
-          type: TCPMessageType.MESSAGE,
-          payload: messagePackage,
-        })
-      );
+      pair.write(JSON.stringify(messagePackage));
     });
   }
 

@@ -1,8 +1,50 @@
-import { Box } from "ink";
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
+import { Box, Text } from "ink";
+import { getChats } from "../../contexts/ChatContext.js";
+import { TCPMessageMessagePayload } from "../../types/tcp.js";
+import { INITIAL_TTL } from "../../config.js";
 
 function ChatsBox() {
-  return <Box></Box>;
+  const [chats, setChats] = useState([] as TCPMessageMessagePayload[]);
+  const chatsHandler = useCallback(() => {}, [chats]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setChats([...getChats()]);
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [chatsHandler]);
+
+  return (
+    <Box display="flex" flexDirection="column" marginBottom={1}>
+      <Text color="green">Chats {chats.length}</Text>
+      {chats.map((chat) => (
+        <Chat chat={chat} key={chat.uuid} />
+      ))}
+    </Box>
+  );
+}
+
+function Chat({ chat }: { chat: TCPMessageMessagePayload }) {
+  return (
+    <Box>
+      <Text color={"gray"}>{`(${chat.ttl} ttl) `}</Text>
+      <Text
+        color={
+          chat.ttl === INITIAL_TTL
+            ? "gree"
+            : chat.ttl === INITIAL_TTL - 1
+            ? "blue"
+            : "red"
+        }
+      >
+        {chat.username}
+      </Text>
+      <Text color="gray">{`: `}</Text>
+      <Text color="white">{`${chat.message}`}</Text>
+    </Box>
+  );
 }
 
 export default ChatsBox;

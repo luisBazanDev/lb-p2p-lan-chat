@@ -37,7 +37,7 @@ export default function InputText() {
   });
 
   return (
-    <Box>
+    <Box width="100%">
       <Box width={80}>
         <Text color={"gray"}>{`(${IP_ADDRESS()})`}</Text>
         <Text color={"green"}>{` ${USERNAME()}`}</Text>

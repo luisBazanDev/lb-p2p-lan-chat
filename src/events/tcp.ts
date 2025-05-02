@@ -12,7 +12,7 @@ export async function onTcpHello(
   const username = payload.username;
 
   // TODO: Register message as system message
-  console.log(`👋 ${username} join to the chet from ${ip}`);
+  console.log(`👋 ${username} join to the chat from ${ip}`);
 }
 
 export async function onTcpMessage(
