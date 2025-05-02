@@ -23,6 +23,7 @@ export default function InputText() {
       if (inputa === "exit") {
         process.exit(0);
       }
+      // TODO if inputa is empty, do not send message
       TCPServer.sendMessage(inputa);
       setInput("");
       return;
