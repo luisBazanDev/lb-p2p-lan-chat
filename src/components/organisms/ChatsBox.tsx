@@ -19,9 +19,13 @@ function ChatsBox() {
   return (
     <Box display="flex" flexDirection="column" marginBottom={1}>
       <Text color="green">Chats {chats.length}</Text>
-      {chats.map((chat) => (
-        <Chat chat={chat} key={chat.uuid} />
-      ))}
+      {chats.map((chat) =>
+        chat.system ? (
+          <SystemChat chat={chat} key={chat.uuid} />
+        ) : (
+          <Chat chat={chat} key={chat.uuid} />
+        )
+      )}
     </Box>
   );
 }
@@ -42,6 +46,15 @@ function Chat({ chat }: { chat: TCPMessageMessagePayload }) {
         {chat.username}
       </Text>
       <Text color="gray">{`: `}</Text>
+      <Text color="white">{`${chat.message}`}</Text>
+    </Box>
+  );
+}
+
+function SystemChat({ chat }: { chat: TCPMessageMessagePayload }) {
+  return (
+    <Box>
+      <Text color={"gray"}>{`(system) `}</Text>
       <Text color="white">{`${chat.message}`}</Text>
     </Box>
   );

@@ -78,7 +78,7 @@ export default class TCPServer {
     }
   }
 
-  private static disconnect(ip: string) {
+  static disconnect(ip: string) {
     const pair = getPair(ip);
     if (!pair) return;
 
@@ -86,14 +86,20 @@ export default class TCPServer {
     removePair(ip);
 
     if (PairsContext.getPairs().findIndex((x) => x.ip === ip) === -1) return;
-    PairsContext.removePair(ip);
 
-    // TODO: Register message as system message
-    console.log(
-      `👋 ${
+    // Register message as system message
+    addChat({
+      username: PairsContext.getPairs().find((x) => x.ip === ip)?.username!,
+      message: `👋 ${
         PairsContext.getPairs().find((x) => x.ip === ip)?.username
-      } left the chat from ${ip}`
-    );
+      } left the chat from ${ip.split(":").pop()}`,
+      uuid: randomUUID(),
+      ttl: INITIAL_TTL,
+      system: true,
+    });
+
+    // Remove pair from context
+    PairsContext.removePair(ip);
   }
 
   private static registerSocket(socket: net.Socket) {
@@ -131,18 +137,18 @@ export default class TCPServer {
 
     socket.on("end", () => {
       if (getPair(socket.remoteAddress!)) {
-        this.disconnect(socket.remoteAddress!);
+        TCPServer.disconnect(socket.remoteAddress!);
       }
     });
 
     socket.on("error", () => {
       if (getPair(socket.remoteAddress!)) {
-        this.disconnect(socket.remoteAddress!);
+        TCPServer.disconnect(socket.remoteAddress!);
       }
     });
     socket.on("timeout", () => {
       if (getPair(socket.remoteAddress!)) {
-        this.disconnect(socket.remoteAddress!);
+        TCPServer.disconnect(socket.remoteAddress!);
       }
     });
 

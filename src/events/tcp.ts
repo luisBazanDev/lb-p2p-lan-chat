@@ -6,8 +6,9 @@ import {
   TCPMessageType,
 } from "../types/tcp.js";
 import { addChat } from "../contexts/ChatContext.js";
-import { getPairs } from "../config.js";
+import { getPairs, INITIAL_TTL } from "../config.js";
 import PaisContext from "../contexts/PairsContext.js";
+import { randomUUID } from "crypto";
 
 const sessionChats: string[] = [];
 const MAX_SESSION_CHAT = 1000;
@@ -26,8 +27,14 @@ export async function onTcpHello(
     timestamp: Date.now(),
   });
 
-  // TODO: Register message as system message
-  console.log(`👋 ${username} join to the chat from ${ip}`);
+  // Register message as system message
+  addChat({
+    username: username,
+    message: `👋 ${username} join to the chat from ${ip}`,
+    uuid: randomUUID(),
+    ttl: INITIAL_TTL,
+    system: true,
+  });
 }
 
 export async function onTcpMessage(

@@ -18,6 +18,7 @@ export type TCPMessageMessagePayload = {
   message: string;
   ttl: number;
   uuid: string;
+  system?: boolean;
 };
 
 export type TCPMessage =
