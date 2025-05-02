@@ -52,19 +52,21 @@ export default class TCPServer {
         message: message,
         username: USERNAME()!,
         uuid: randomUUID(),
-        ttl: INITIAL_TTL,
+        ttl: INITIAL_TTL - 1,
       },
     };
 
-    addChat(messagePackage.payload);
-
-    const sentMessagePackage = { ...messagePackage };
-
-    sentMessagePackage.payload.ttl = INITIAL_TTL - 1;
+    // Register self message as user message
+    addChat({
+      message: message,
+      username: USERNAME()!,
+      uuid: randomUUID(),
+      ttl: INITIAL_TTL,
+    });
 
     // Send the message to all connected pairs
     pairs.forEach((pair) => {
-      pair.write(JSON.stringify(sentMessagePackage));
+      pair.write(JSON.stringify(messagePackage));
     });
   }
 
