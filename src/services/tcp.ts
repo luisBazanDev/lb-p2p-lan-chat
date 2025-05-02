@@ -55,17 +55,15 @@ export default class TCPServer {
       },
     };
 
-    // TODO: Register message on the local chat
     addChat(messagePackage.payload);
+
+    const sentMessagePackage = { ...messagePackage };
+
+    sentMessagePackage.payload.ttl = INITIAL_TTL - 1;
 
     // Send the message to all connected pairs
     pairs.forEach((pair) => {
-      pair.write(
-        JSON.stringify({
-          ...messagePackage,
-          ...{ payload: { ttl: INITIAL_TTL - 1 } },
-        })
-      );
+      pair.write(JSON.stringify(sentMessagePackage));
     });
   }
 
