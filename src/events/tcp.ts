@@ -42,10 +42,9 @@ export async function onTcpMessage(
   if (
     getChats()
       .map((x) => x.uuid)
-      .includes(payload.uuid)
-  ) {
+      .indexOf(payload.uuid) !== -1
+  )
     return;
-  }
 
   // Add the message to the session
   addChat(payload);
@@ -63,6 +62,7 @@ export async function onTcpMessage(
       ttl: payload.ttl - 1,
     },
   };
+
   getPairs().forEach((pair) => {
     // Filter if the message is from the same user
     if (pair.remoteAddress === socket.remoteAddress) return;

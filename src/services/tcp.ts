@@ -60,7 +60,7 @@ export default class TCPServer {
     addChat({
       message: message,
       username: USERNAME()!,
-      uuid: randomUUID(),
+      uuid: messagePackage.payload.uuid,
       ttl: INITIAL_TTL,
     });
 
