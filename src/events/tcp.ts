@@ -5,13 +5,10 @@ import {
   TCPMessageMessagePayload,
   TCPMessageType,
 } from "../types/tcp.js";
-import { addChat } from "../contexts/ChatContext.js";
+import { addChat, getChats } from "../contexts/ChatContext.js";
 import { getPairs, INITIAL_TTL } from "../config.js";
 import PaisContext from "../contexts/PairsContext.js";
 import { randomUUID } from "crypto";
-
-const sessionChats: string[] = [];
-const MAX_SESSION_CHAT = 1000;
 
 export async function onTcpHello(
   socket: net.Socket,
@@ -42,17 +39,16 @@ export async function onTcpMessage(
   payload: TCPMessageMessagePayload
 ) {
   // Filter if the message already exists in the session
-  if (sessionChats.includes(payload.uuid)) {
+  if (
+    getChats()
+      .map((x) => x.uuid)
+      .includes(payload.uuid)
+  ) {
     return;
   }
 
   // Add the message to the session
   addChat(payload);
-  sessionChats.push(payload.uuid);
-
-  if (sessionChats.length > MAX_SESSION_CHAT) {
-    sessionChats.shift();
-  }
 
   // Discard the message if the TTL is less than 1
   if (payload.ttl <= 1) return;
