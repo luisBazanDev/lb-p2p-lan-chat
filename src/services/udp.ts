@@ -1,5 +1,5 @@
 import dgram from "node:dgram";
-import { getPair, UDP_PORT } from "../config.js";
+import { getPair, getPairs, IP_ADDRESS, UDP_PORT } from "../config.js";
 import Interfaces from "./Interfaces.js";
 import { UDPMessageType } from "../types/udp.js";
 import TCPServer from "./tcp.js";
@@ -61,7 +61,7 @@ export default class UDPServer {
     });
 
     // Set the socket to broadcast
-    udpServer.interval = setInterval(() => {
+    const discoverClients = () => {
       if (!udpServer.socket) return;
       udpServer.socket.send(
         Buffer.from(UDPMessageType.DISCOVER),
@@ -70,6 +70,21 @@ export default class UDPServer {
         UDP_PORT(),
         "255.255.255.255"
       );
+    };
+
+    let udpDiscoverCycle = 0;
+
+    setInterval(() => {
+      if (!IP_ADDRESS) return;
+      udpDiscoverCycle++;
+
+      // If less than 3 clients, discover
+      // If less than 10 clients, discover every 25 seconds
+      if (getPairs().length <= 3) discoverClients();
+      else if (getPairs().length <= 10 && udpDiscoverCycle % 5 === 0)
+        discoverClients();
+
+      // Else stop discovering
     }, 5000);
 
     this.registerListeners(udpServer.socket);
