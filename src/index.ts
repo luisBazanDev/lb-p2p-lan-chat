@@ -155,9 +155,7 @@ udpServer.on("message", (msg, rinfo) => {
 });
 
 // Discover new clients every 5 seconds
-setInterval(() => {
-  if (!CONFIG.IP_ADDRESS) return;
-
+function discoverClients() {
   const message = Buffer.from("discover");
   udpServer.send(
     message,
@@ -169,4 +167,18 @@ setInterval(() => {
       // console.log("🔍 Sent discovery message");
     }
   );
+}
+
+let udpDiscoverCycle = 0;
+
+setInterval(() => {
+  if (!CONFIG.IP_ADDRESS) return;
+  udpDiscoverCycle++;
+
+  // If less than 3 clients, discover
+  // If less than 10 clients, discover every 25 seconds
+  if (pairs.length <= 3) discoverClients();
+  else if (pairs.length <= 10 && udpDiscoverCycle % 5 === 0) discoverClients();
+
+  // Else stop discovering
 }, 5000);
