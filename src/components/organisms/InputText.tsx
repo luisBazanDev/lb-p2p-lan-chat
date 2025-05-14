@@ -36,7 +36,7 @@ export default function InputText() {
       return;
     }
 
-    if (key.delete) {
+    if (key.delete || key.backspace) {
       setInput((prev) => prev.slice(0, -1));
       return;
     } else {
