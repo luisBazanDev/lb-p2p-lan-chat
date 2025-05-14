@@ -21,13 +21,15 @@ function ChatsBox() {
       <Box marginBottom={1}>
         <Text color="green">Chat Box | {chats.length} messages</Text>
       </Box>
-      {chats.map((chat) =>
-        chat.system ? (
-          <SystemChat chat={chat} key={chat.uuid} />
-        ) : (
-          <Chat chat={chat} key={chat.uuid} />
-        )
-      )}
+      <Box height={-1} flexDirection="column">
+        {chats.map((chat) =>
+          chat.system ? (
+            <SystemChat chat={chat} key={chat.uuid} />
+          ) : (
+            <Chat chat={chat} key={chat.uuid} />
+          )
+        )}
+      </Box>
     </Box>
   );
 }
