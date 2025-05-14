@@ -17,7 +17,7 @@ function ChatsBox() {
   }, [chatsHandler]);
 
   return (
-    <Box display="flex" flexDirection="column" marginBottom={1}>
+    <Box display="flex" flexDirection="column" marginBottom={1} height={-1}>
       <Box marginBottom={1}>
         <Text color="green">Chat Box | {chats.length} messages</Text>
       </Box>
