@@ -6,13 +6,7 @@ import ChatsBox from "./components/organisms/ChatsBox.js";
 export default function App() {
   return (
     <>
-      <Box
-        margin={1}
-        display="flex"
-        flexDirection="column"
-        width="100%"
-        height={-1}
-      >
+      <Box margin={1} display="flex" flexDirection="column" width="100%">
         <ChatsBox />
         <InputText />
       </Box>
