@@ -11,7 +11,7 @@ import {
 import { TCPMessage, TCPMessageType } from "../types/tcp.js";
 import { randomUUID } from "crypto";
 import { onTcpHello, onTcpMessage } from "../events/tcp.js";
-import { addChat } from "../contexts/ChatContext.js";
+import { addChat, clearChats } from "../contexts/ChatContext.js";
 import PairsContext from "../contexts/PairsContext.js";
 
 export default class TCPServer {
@@ -155,5 +155,9 @@ export default class TCPServer {
     });
 
     addPair(socket);
+  }
+
+  static clearChat() {
+    clearChats();
   }
 }

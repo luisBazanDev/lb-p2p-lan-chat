@@ -26,6 +26,12 @@ export default function InputText() {
         process.exit(0);
       }
 
+      if (inputa === "clear") {
+        TCPServer.clearChat();
+        setInput("");
+        return;
+      }
+
       // Check if the input is empty
       if (inputa.trim() === "") {
         return;

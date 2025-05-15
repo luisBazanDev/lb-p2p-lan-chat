@@ -7,3 +7,6 @@ export const addChat = (chat: TCPMessageMessagePayload) => {
 export const getChats = () => {
   return Chats;
 };
+export const clearChats = () => {
+  Chats.splice(0, Chats.length);
+};
