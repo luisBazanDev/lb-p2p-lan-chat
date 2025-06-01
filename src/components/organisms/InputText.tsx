@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useInput, Text, Box } from "ink";
+import { useInput, Text, Box, useStdout } from "ink";
 import { IP_ADDRESS, USERNAME } from "../../config.js";
 import TCPServer from "../../services/tcp.js";
-import Pairs from "../atoms/Pairs.js";
-import UdpStatus from "../atoms/UdpStatus.js";
-import TcpStatus from "../atoms/TcpStatus.js";
+import { exitFullScreen } from "../FullScreen.js";
 
 export default function InputText() {
+  const { stdout } = useStdout();
   const [inputa, setInput] = useState("");
   const [isCursorVisible, setIsCursorVisible] = useState(true);
 
@@ -23,7 +22,14 @@ export default function InputText() {
   useInput((input, key) => {
     if (key.return) {
       if (inputa === "exit") {
-        process.exit(0);
+        exitFullScreen();
+        return;
+      }
+
+      if (inputa === "clear") {
+        TCPServer.clearChat();
+        setInput("");
+        return;
       }
 
       // Check if the input is empty
@@ -44,35 +50,39 @@ export default function InputText() {
     }
   });
 
+  const ipAddress = IP_ADDRESS() as string;
+  const username = USERNAME() as string;
+  const maxInputLength =
+    stdout.columns * 0.8 - 12 - ipAddress.length - username.length;
+
   return (
-    <Box width="100%">
-      <Box width={80}>
-        <Text color={"gray"}>{`(${IP_ADDRESS()})`}</Text>
-        <Text color={"greenBright"}>{` ${USERNAME()}`}</Text>
-        <Text color={"redBright"}>{" > "}</Text>
-        <Box width={50}>
-          <Text wrap="truncate-start">
-            {isCursorVisible && inputa === "" ? (
-              <Text color={"white"}>|</Text>
-            ) : (
-              " "
-            )}
-            {inputa === "" ? (
-              <Text color={"grey"}>Type your message or 'exit' to end</Text>
-            ) : (
-              inputa
-            )}
-            {isCursorVisible && inputa !== "" && <Text color={"white"}>|</Text>}
+    <Box width="100%" borderStyle="round" borderColor="green">
+      <Text color={"gray"}>{`(${ipAddress})`}</Text>
+      <Text color={"greenBright"}>{` ${username}`}</Text>
+      <Text color={"redBright"}>{" > "}</Text>
+      <Box
+        flexGrow={1}
+        flexDirection="row"
+        display="flex"
+        height={1}
+        overflow="hidden"
+      >
+        {/* Cursor start */}
+        {isCursorVisible && inputa === "" ? (
+          <Text color={"white"}>|</Text>
+        ) : (
+          <Text color={"white"}> </Text>
+        )}
+        {inputa === "" ? (
+          <Text color={"grey"}>Type your message or 'exit' to end</Text>
+        ) : (
+          <Text color={"white"} wrap="truncate-start">
+            {inputa.length > maxInputLength
+              ? `${inputa.slice(inputa.length - maxInputLength)}`
+              : inputa}
           </Text>
-        </Box>
-      </Box>
-      <Box>
-        <Text> | </Text>
-        <Pairs />
-        <Text> | </Text>
-        <UdpStatus />
-        <Text> | </Text>
-        <TcpStatus />
+        )}
+        {isCursorVisible && inputa !== "" && <Text color={"white"}>|</Text>}
       </Box>
     </Box>
   );

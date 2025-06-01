@@ -11,8 +11,9 @@ import {
 import { TCPMessage, TCPMessageType } from "../types/tcp.js";
 import { randomUUID } from "crypto";
 import { onTcpHello, onTcpMessage } from "../events/tcp.js";
-import { addChat } from "../contexts/ChatContext.js";
+import { addChat, clearChats } from "../contexts/ChatContext.js";
 import PairsContext from "../contexts/PairsContext.js";
+import { log } from "../contexts/LogsContext.js";
 
 export default class TCPServer {
   private declare socket: net.Server | null;
@@ -33,11 +34,11 @@ export default class TCPServer {
     tcpServer.socket = net.createServer(this.registerSocket);
 
     tcpServer.socket.listen(TCP_PORT(), () => {
-      console.log("✅ TCP server started", TCP_PORT());
+      log("✔ TCP server started " + TCP_PORT());
     });
 
     tcpServer.socket.on("error", (err) => {
-      console.error("❌ TCP error: ", err);
+      log("❌ TCP error: " + err);
     });
   }
 
@@ -72,6 +73,7 @@ export default class TCPServer {
 
   static connect(ip: string) {
     try {
+      log(`⚙ Try connect to ${ip}...`);
       const client = net.createConnection({ host: ip, port: TCP_PORT() }, () =>
         this.registerSocket(client)
       );
@@ -105,11 +107,14 @@ export default class TCPServer {
   }
 
   private static registerSocket(socket: net.Socket) {
+    log(`⚙ New connection entry...`);
     // Prevent double connections between pairs
     if (getPair(socket.remoteAddress!)) {
       socket.destroy();
+      log(`⚙ New connection destroyed`);
       return;
     }
+    log(`⚙ New connection accepted`);
 
     // Send hello message
     socket.write(
@@ -155,5 +160,9 @@ export default class TCPServer {
     });
 
     addPair(socket);
+  }
+
+  static clearChat() {
+    clearChats();
   }
 }
