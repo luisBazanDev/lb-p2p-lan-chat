@@ -1,8 +1,9 @@
-# LB P2P LAN CHAT
+# LB P2P LAN CHAT | v0.1.0
 
 It's a simple P2P chat based on LAN networks. It maintains two listening sockets: a UDP socket for discovery and a TCP socket for message transport.
 
-![screenshot1](./assets/screenshot1.png)
+![screenshot1](./assets/screenshot-1.webp)
+![screenshot2](./assets/screenshot-2.webp)
 
 # Installation
 

@@ -24,8 +24,12 @@ function ChatsBox() {
       height="100%"
       width="100%"
     >
-      <Box marginBottom={1} width="100%" justifyContent="center">
-        <Text color="green">Chat Box | {chats.length} messages</Text>
+      <Box marginBottom={1} width="100%" justifyContent="center" display="flex">
+        <Text color="white" bold>
+          LB-P2P-LAN-CHAT
+        </Text>
+        <Text color="greenBright">v0.1.0</Text>
+        <Text color="gray"> | {chats.length} messages</Text>
       </Box>
       <Box flexDirection="column" justifyContent="flex-end" flexWrap="wrap">
         {chats.map((chat) =>
