@@ -33,7 +33,7 @@ const FullScreen = ({ children }: { children: React.JSX.Element }) => {
 
   return (
     <Box
-      height={size.rows}
+      height={size.rows - 2}
       width={size.columns}
       borderColor={"green"}
       flexDirection="column"

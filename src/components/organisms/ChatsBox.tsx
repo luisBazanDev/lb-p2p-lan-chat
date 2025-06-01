@@ -17,8 +17,14 @@ function ChatsBox() {
   }, [chatsHandler]);
 
   return (
-    <Box display="flex" flexDirection="column" marginBottom={1} height="100%">
-      <Box marginBottom={1}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      marginBottom={1}
+      height="100%"
+      width="100%"
+    >
+      <Box marginBottom={1} width="100%" justifyContent="center">
         <Text color="green">Chat Box | {chats.length} messages</Text>
       </Box>
       <Box flexDirection="column" justifyContent="flex-end" flexWrap="wrap">
