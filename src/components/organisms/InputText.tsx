@@ -2,9 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useInput, Text, Box } from "ink";
 import { IP_ADDRESS, USERNAME } from "../../config.js";
 import TCPServer from "../../services/tcp.js";
-import Pairs from "../atoms/Pairs.js";
-import UdpStatus from "../atoms/UdpStatus.js";
-import TcpStatus from "../atoms/TcpStatus.js";
+import { exitFullScreen } from "../FullScreen.js";
 
 export default function InputText() {
   const [inputa, setInput] = useState("");
@@ -23,7 +21,8 @@ export default function InputText() {
   useInput((input, key) => {
     if (key.return) {
       if (inputa === "exit") {
-        process.exit(0);
+        exitFullScreen();
+        return;
       }
 
       if (inputa === "clear") {
@@ -51,34 +50,24 @@ export default function InputText() {
   });
 
   return (
-    <Box width="100%">
-      <Box width={80}>
-        <Text color={"gray"}>{`(${IP_ADDRESS()})`}</Text>
-        <Text color={"greenBright"}>{` ${USERNAME()}`}</Text>
-        <Text color={"redBright"}>{" > "}</Text>
-        <Box width={50}>
-          <Text wrap="truncate-start">
-            {isCursorVisible && inputa === "" ? (
-              <Text color={"white"}>|</Text>
-            ) : (
-              " "
-            )}
-            {inputa === "" ? (
-              <Text color={"grey"}>Type your message or 'exit' to end</Text>
-            ) : (
-              inputa
-            )}
-            {isCursorVisible && inputa !== "" && <Text color={"white"}>|</Text>}
-          </Text>
-        </Box>
-      </Box>
-      <Box>
-        <Text> | </Text>
-        <Pairs />
-        <Text> | </Text>
-        <UdpStatus />
-        <Text> | </Text>
-        <TcpStatus />
+    <Box width="100%" borderStyle="round" borderColor="green">
+      <Text color={"gray"}>{`(${IP_ADDRESS()})`}</Text>
+      <Text color={"greenBright"}>{` ${USERNAME()}`}</Text>
+      <Text color={"redBright"}>{" > "}</Text>
+      <Box flexGrow={1}>
+        <Text wrap="truncate-start">
+          {isCursorVisible && inputa === "" ? (
+            <Text color={"white"}>|</Text>
+          ) : (
+            " "
+          )}
+          {inputa === "" ? (
+            <Text color={"grey"}>Type your message or 'exit' to end</Text>
+          ) : (
+            inputa
+          )}
+          {isCursorVisible && inputa !== "" && <Text color={"white"}>|</Text>}
+        </Text>
       </Box>
     </Box>
   );

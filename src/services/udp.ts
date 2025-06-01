@@ -3,6 +3,7 @@ import { getPair, getPairs, IP_ADDRESS, UDP_PORT } from "../config.js";
 import Interfaces from "./Interfaces.js";
 import { UDPMessageType } from "../types/udp.js";
 import TCPServer from "./tcp.js";
+import { log } from "../contexts/LogsContext.js";
 
 export default class UDPServer {
   private declare socket: dgram.Socket | null;
@@ -42,7 +43,7 @@ export default class UDPServer {
 
   private static registerListeners(udpServer: dgram.Socket) {
     udpServer.on("error", (err) => {
-      console.error("❌ UDP error: ", err);
+      log("❌ UDP error: " + err.message);
     });
 
     udpServer.on("message", this.onMessage);
@@ -57,7 +58,7 @@ export default class UDPServer {
 
     udpServer.socket.bind(UDP_PORT(), () => {
       udpServer.socket?.setBroadcast(true);
-      console.log("✅ UDP server started");
+      log("✅ UDP server started");
     });
 
     // Set the socket to broadcast
@@ -103,7 +104,7 @@ export default class UDPServer {
       udpServer.socket.send(message, UDP_PORT);
       return true;
     } catch (error) {
-      console.error("Error sending message:", error);
+      log("Error sending message:" + error);
       return false;
     }
   }

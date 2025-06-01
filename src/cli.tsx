@@ -6,6 +6,8 @@ import App from "./app.js";
 import { configure } from "./config.js";
 import UDPServer from "./services/udp.js";
 import TCPServer from "./services/tcp.js";
+import FullScreen from "./components/FullScreen.js";
+// import Screen from "./components/Screen.js";
 
 meow(
   `
@@ -36,7 +38,11 @@ async function main() {
   await UDPServer.start();
   await TCPServer.start();
 
-  render(<App />);
+  render(
+    <FullScreen>
+      <App />
+    </FullScreen>
+  );
 }
 
 main();

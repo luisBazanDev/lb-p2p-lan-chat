@@ -13,6 +13,7 @@ import { randomUUID } from "crypto";
 import { onTcpHello, onTcpMessage } from "../events/tcp.js";
 import { addChat, clearChats } from "../contexts/ChatContext.js";
 import PairsContext from "../contexts/PairsContext.js";
+import { log } from "../contexts/LogsContext.js";
 
 export default class TCPServer {
   private declare socket: net.Server | null;
@@ -33,11 +34,11 @@ export default class TCPServer {
     tcpServer.socket = net.createServer(this.registerSocket);
 
     tcpServer.socket.listen(TCP_PORT(), () => {
-      console.log("✅ TCP server started", TCP_PORT());
+      log("✅ TCP server started" + TCP_PORT());
     });
 
     tcpServer.socket.on("error", (err) => {
-      console.error("❌ TCP error: ", err);
+      log("❌ TCP error: " + err);
     });
   }
 
