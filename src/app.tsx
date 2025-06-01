@@ -5,6 +5,7 @@ import ChatsBox from "./components/organisms/ChatsBox.js";
 import Pairs from "./components/atoms/Pairs.js";
 import UdpStatus from "./components/atoms/UdpStatus.js";
 import TcpStatus from "./components/atoms/TcpStatus.js";
+import LogsBox from "./components/organisms/LogsBox.js";
 
 export default function App() {
   return (
@@ -15,7 +16,6 @@ export default function App() {
         flexDirection="row"
         width="100%"
         height="100%"
-        rowGap={1}
       >
         <Box
           width="80%"
@@ -29,16 +29,12 @@ export default function App() {
           </Box>
           <InputText />
         </Box>
-        <Box
-          flexGrow={1}
-          display="flex"
-          flexDirection="column"
-          justifyContent="space-between"
-        >
+        <Box display="flex" flexGrow={1} flexDirection="column">
           <Box
+            height={process.stdout.rows - 8}
             display="flex"
             flexDirection="column"
-            flexGrow={1}
+            paddingX={1}
             marginX={1}
             borderStyle="round"
             borderColor="gray"
@@ -48,12 +44,16 @@ export default function App() {
                 Logs
               </Text>
             </Box>
+            <Box width="100%" display="flex" flexDirection="column-reverse">
+              <LogsBox />
+            </Box>
           </Box>
           <Box
             display="flex"
             flexDirection="column"
-            marginX={1}
             paddingX={1}
+            height={6}
+            marginX={1}
             borderStyle="round"
             borderColor="gray"
           >

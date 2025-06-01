@@ -43,7 +43,7 @@ export default class UDPServer {
 
   private static registerListeners(udpServer: dgram.Socket) {
     udpServer.on("error", (err) => {
-      log("❌ UDP error: " + err.message);
+      log("UDP error: " + err.message);
     });
 
     udpServer.on("message", this.onMessage);
@@ -58,7 +58,7 @@ export default class UDPServer {
 
     udpServer.socket.bind(UDP_PORT(), () => {
       udpServer.socket?.setBroadcast(true);
-      log("✅ UDP server started");
+      log("✔ UDP server started");
     });
 
     // Set the socket to broadcast

@@ -34,7 +34,7 @@ export default class TCPServer {
     tcpServer.socket = net.createServer(this.registerSocket);
 
     tcpServer.socket.listen(TCP_PORT(), () => {
-      log("✅ TCP server started" + TCP_PORT());
+      log("✔ TCP server started " + TCP_PORT());
     });
 
     tcpServer.socket.on("error", (err) => {
