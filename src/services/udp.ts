@@ -37,6 +37,7 @@ export default class UDPServer {
       if (getPair(ip)) return;
 
       // Connect to the client
+      log("⚙ UDP eureka " + ip);
       TCPServer.connect(ip);
     }
   }
@@ -64,6 +65,7 @@ export default class UDPServer {
     // Set the socket to broadcast
     const discoverClients = () => {
       if (!udpServer.socket) return;
+      log("⚙ Discovering clients...");
       udpServer.socket.send(
         Buffer.from(UDPMessageType.DISCOVER),
         0,

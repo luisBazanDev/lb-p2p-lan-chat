@@ -73,6 +73,7 @@ export default class TCPServer {
 
   static connect(ip: string) {
     try {
+      log(`⚙ Try connect to ${ip}...`);
       const client = net.createConnection({ host: ip, port: TCP_PORT() }, () =>
         this.registerSocket(client)
       );
@@ -106,11 +107,14 @@ export default class TCPServer {
   }
 
   private static registerSocket(socket: net.Socket) {
+    log(`⚙ New connection entry...`);
     // Prevent double connections between pairs
     if (getPair(socket.remoteAddress!)) {
       socket.destroy();
+      log(`⚙ New connection destroyed`);
       return;
     }
+    log(`⚙ New connection accepted`);
 
     // Send hello message
     socket.write(
