@@ -6,8 +6,14 @@ function LogsBox() {
   const [logs, setLogs] = React.useState<
     { message: string; timestamp: number }[]
   >([]);
-  const maxRows = process.stdout.rows - 10;
-  const maxWidth = Math.floor(process.stdout.columns * 0.2 - 6);
+  
+  const { maxRows, maxWidth } = React.useMemo(
+    () => ({
+      maxRows: process.stdout.rows - 10,
+      maxWidth: Math.floor(process.stdout.columns * 0.2 - 6),
+    }),
+    []
+  );
 
   const printLogs: { message: string; timestamp: number }[] = [];
 

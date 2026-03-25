@@ -5,7 +5,7 @@ export const addChat = (chat: TCPMessageMessagePayload) => {
   Chats.push(chat);
 };
 export const getChats = () => {
-  return Chats;
+  return [...Chats];
 };
 export const clearChats = () => {
   Chats.splice(0, Chats.length);
