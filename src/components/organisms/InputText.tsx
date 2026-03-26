@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useInput, Text, Box, useStdout } from "ink";
 import { IP_ADDRESS, USERNAME } from "../../config.js";
 import TCPServer from "../../services/tcp.js";
+import HTTPServer from "../../services/http.js";
 import { exitFullScreen } from "../FullScreen.js";
 
 export default function InputText() {
@@ -32,12 +33,66 @@ export default function InputText() {
         return;
       }
 
+      // Handle /remote command
+      if (inputa.startsWith("/remote ")) {
+        const parts = inputa.slice(8).split(" ");
+        const protocol = parts[0];
+        const url = parts.slice(1).join(" ");
+
+        if (!protocol || !url) {
+          console.error(
+            "Usage: /remote <protocol> <url>"
+          );
+          setInput("");
+          return;
+        }
+
+        HTTPServer.getInstance()
+          .connect(protocol, url)
+          .catch(() => {
+            // Error already logged and added to chat
+          });
+
+        setInput("");
+        return;
+      }
+
+      // Handle /disconnect command
+      if (inputa === "/disconnect") {
+        HTTPServer.getInstance()
+          .disconnect()
+          .catch(() => {
+            // Error already logged and added to chat
+          });
+
+        setInput("");
+        return;
+      }
+
       // Check if the input is empty
       if (inputa.trim() === "") {
         return;
       }
 
+      // Check if it's a command
+      if (inputa.startsWith("/")) {
+        console.error(
+          "Unknown command. Available commands: /remote <protocol> <url>, /disconnect, /clear, /exit"
+        );
+        setInput("");
+        return;
+      }
+
+      // Send message to all connected nodes (TCP and HTTP)
       TCPServer.sendMessage(inputa);
+
+      const httpServer = HTTPServer.getInstance();
+      if (httpServer.isRemoteConnected()) {
+        httpServer.sendMessage(inputa).catch(() => {
+          // Error already logged
+        });
+      }
+
       setInput("");
       return;
     }

@@ -5,6 +5,7 @@ import ChatsBox from "./components/organisms/ChatsBox.js";
 import Pairs from "./components/atoms/Pairs.js";
 import UdpStatus from "./components/atoms/UdpStatus.js";
 import TcpStatus from "./components/atoms/TcpStatus.js";
+import HttpStatus from "./components/atoms/HttpStatus.js";
 import LogsBox from "./components/organisms/LogsBox.js";
 
 export default function App() {
@@ -65,6 +66,7 @@ export default function App() {
             <Pairs />
             <UdpStatus />
             <TcpStatus />
+            <HttpStatus />
           </Box>
         </Box>
       </Box>
